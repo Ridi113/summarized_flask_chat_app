@@ -14,7 +14,7 @@ def invalid_credentials(form, field):
     user_object = User.query.filter_by(username=username_entered).first()
     if user_object is None:
         raise ValidationError("Username or password is incorrect")
-    elif password_entered != user_object.password:
+    elif not pbkdf2_sha256.verify(password_entered, user_object.password):
         raise ValidationError("Username or password is incorrect")
 
 
