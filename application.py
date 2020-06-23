@@ -1,4 +1,4 @@
-import os
+# import os
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from wtform_fields import *
@@ -11,11 +11,15 @@ from passlib.hash import pbkdf2_sha256
 
 # Configure app
 app = Flask(__name__)
+# app.secret_key = os.environ.get('SECRET')
 app.secret_key = 'replace later'
 
-#configure database
+
+# configure database
 app.config['SQLALCHEMY_DATABASE_URI']='postgres://jayfgzkhxgprlt:8708ad5ec7c873aa3f587b152b5a9d82dbc1f4c4c041fed1939d431ca3810b30@ec2-34-193-117-204.compute-1.amazonaws.com:5432/d25lfpg5t060v5'
 
+#configure database
+# app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
 #Initialize Flask-SocketIO
@@ -127,5 +131,5 @@ def on_leave(data):
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug = True)
-    # app.run(debug = True)
+    # socketio.run(app, debug = True)
+    app.run(debug = True)
