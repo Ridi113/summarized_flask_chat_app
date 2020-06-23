@@ -120,6 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector("#user_message").focus();
     }
 
+//    function summarizeChat(room){
+//    socket.emit('summarization', {'username': username, 'room': room})
+//    }
+
     // Scroll chat window down
     function scrollDownChatWindow() {
         const chatWindow = document.querySelector("#display-message-section");
