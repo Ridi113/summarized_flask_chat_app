@@ -1,25 +1,21 @@
-# import os
-from flask import Flask, render_template, redirect, url_for, flash
+import os
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from wtform_fields import *
 from models import *
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 import time
 from time import localtime, strftime
+from spacy_summarization import text_summarizer
 
 from passlib.hash import pbkdf2_sha256
 
 # Configure app
 app = Flask(__name__)
-# app.secret_key = os.environ.get('SECRET')
-app.secret_key = 'replace later'
-
-
-# configure database
-app.config['SQLALCHEMY_DATABASE_URI']='postgres://jayfgzkhxgprlt:8708ad5ec7c873aa3f587b152b5a9d82dbc1f4c4c041fed1939d431ca3810b30@ec2-34-193-117-204.compute-1.amazonaws.com:5432/d25lfpg5t060v5'
+app.secret_key = os.environ.get('SECRET')
 
 #configure database
-# app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
 #Initialize Flask-SocketIO
@@ -128,6 +124,27 @@ def on_leave(data):
     room = data['room']
     leave_room(room)
     send({"msg": username + " has left the room"}, room=room)
+
+
+@socketio.on('summarization')
+def summarization(data):
+    msg = data["msg"]
+    username = data["username"]
+    final_summary = text_summarizer(msg)
+    room = data["room"]
+    send({"username": username, "msg": msg, "final_summary":final_summary}, room=room)
+
+
+# @app.route("/summarize", methods=['GET', 'POST'])
+# def summarize():
+#     if request.method == 'POST':
+#         rawtext = request.form['rawtext']
+#         final_summary = text_summarizer(rawtext)
+#
+#     return render_template('chat.html', username=current_user.username, rooms=ROOMS, final_summary=final_summary)
+
+
+
 
 
 if __name__ == "__main__":
